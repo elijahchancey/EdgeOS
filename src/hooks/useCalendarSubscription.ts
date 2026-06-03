@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { api, instance } from "@/api"
 import { CalendarSubscription } from "@/types/CalendarSubscription"
 
@@ -26,6 +26,9 @@ const useCalendarSubscription = (): UseCalendarSubscriptionReturn => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false)
+  // Single-flight guard: prevents a rapid double-fire from rotating the token
+  // twice and applying the earlier (already-revoked) response as current state.
+  const regeneratingRef = useRef(false)
 
   // POST is idempotent (get-or-create), so visiting the page lazily provisions
   // the token without creating a new one each time.
@@ -54,6 +57,8 @@ const useCalendarSubscription = (): UseCalendarSubscriptionReturn => {
   }, [])
 
   const regenerate = async (): Promise<CalendarSubscription | null> => {
+    if (regeneratingRef.current) return null
+    regeneratingRef.current = true
     setIsRegenerating(true)
     setError(null)
     try {
@@ -72,6 +77,7 @@ const useCalendarSubscription = (): UseCalendarSubscriptionReturn => {
       setError(message)
       return null
     } finally {
+      regeneratingRef.current = false
       setIsRegenerating(false)
     }
   }
