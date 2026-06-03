@@ -10,6 +10,7 @@ import HeaderProfile from "@/components/profile/HeaderProfile"
 import StatsCards from "@/components/profile/StatsCards"
 import MergeEmails from "@/components/profile/MergeEmails"
 import ReferralLinks from "@/components/profile/ReferralLinks"
+import CalendarSubscriptions from "@/components/profile/CalendarSubscriptions"
 import ProfileStats from "@/components/profile/ProfileStats"
 import BannerEdgeWrapped from "@/components/profile/BannerEdgeWrapped"
 import { Loader } from "@/components/ui/Loader"
@@ -145,6 +146,8 @@ export default function ProfileContent() {
 
 
           <ReferralLinks referralCount={userData?.referral_count ?? 0} />
+
+          <CalendarSubscriptions />
 
           <PopupsHistory popups={userData?.popups ?? []} />
           
